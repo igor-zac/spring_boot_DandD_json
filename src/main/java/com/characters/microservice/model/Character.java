@@ -1,6 +1,7 @@
 package com.characters.microservice.model;
 
 import com.sun.istack.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ public class Character {
     private int id;
 
     @NotNull
+    @Length(min = 3, max = 255)
     private String name;
 
     @NotNull

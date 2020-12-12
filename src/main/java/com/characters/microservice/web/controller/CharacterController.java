@@ -30,14 +30,6 @@ public class CharacterController {
         return characterRepository.findAll();
     }
 
-    @GetMapping(value = "/{id}")
-    public Character show(@PathVariable int id)
-    {
-
-        return characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
-
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Character store(@RequestBody @Valid Character character)
@@ -48,6 +40,14 @@ public class CharacterController {
         Character savedCharacter = characterRepository.save(character);
 
         return characterRepository.save(character);
+    }
+
+    @GetMapping(value = "/{id}")
+    public Character show(@PathVariable int id)
+    {
+
+        return characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
+
     }
 
     @PutMapping(value = "/{id}")

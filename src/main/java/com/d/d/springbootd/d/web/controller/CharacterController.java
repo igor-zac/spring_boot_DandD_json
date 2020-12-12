@@ -1,66 +1,88 @@
 package com.d.d.springbootd.d.web.controller;
-import com.d.d.springbootd.d.dao.CharacterDao;
 import com.d.d.springbootd.d.model.Character;
+import com.d.d.springbootd.d.model.CharacterRepository;
+import com.d.d.springbootd.d.model.CharacterType;
+import com.d.d.springbootd.d.model.CharacterTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/characters")
 public class CharacterController {
 
     @Autowired
-    private CharacterDao characterDao;
+    private CharacterRepository characterRepository;
 
-    @GetMapping(value = "/characters")
-    public List<Character> index() {
-        return characterDao.findAll();
+    @Autowired
+    private CharacterTypeRepository characterTypeRepository;
+
+
+    @GetMapping
+    public ResponseEntity<List<Character>> index() {
+        return ResponseEntity.ok(characterRepository.findAll());
     }
 
-    @GetMapping(value = "/characters/{id}")
-    public Character show(@PathVariable int id) {
-        return characterDao.findById(id);
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Character> show(@PathVariable int id) {
+
+        Optional<Character> optionalCharacter = characterRepository.findById(id);
+
+        return optionalCharacter.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.unprocessableEntity().build());
+
     }
 
-    @PostMapping(value = "/characters")
-    public ResponseEntity<Void> store(@RequestBody Character character) {
+    @PostMapping()
+    public ResponseEntity<Character> store(@RequestBody @Valid Character character) {
 
-        Character addedCharacter = characterDao.save(character);
+        Optional<CharacterType> optionalCharacterType = characterTypeRepository.findById(character.getCharacterType().getId());
+        if (optionalCharacterType.isEmpty()){
+            return ResponseEntity.unprocessableEntity().build();
+        }
 
-        if(addedCharacter == null)
-            return ResponseEntity.noContent().build();
+        character.setCharacterType(optionalCharacterType.get());
 
+        Character savedCharacter = characterRepository.save(character);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(addedCharacter.getId())
+                .buildAndExpand(savedCharacter.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(savedCharacter);
     }
 
-    @PutMapping(value = "/characters/{id}")
-    public ResponseEntity<Character> update(@PathVariable int id, @RequestBody Character character) {
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Character> update(@PathVariable int id, @RequestBody @Valid Character character) {
+        Optional<CharacterType> optionalCharacterType = characterTypeRepository.findById(character.getCharacterType().getId());
+        if(optionalCharacterType.isEmpty())
+            return ResponseEntity.unprocessableEntity().build();
 
-        if(id != character.getId() || characterDao.findById(id) == null)
-            return ResponseEntity.badRequest().build();
+        Optional<Character> optionalCharacter = characterRepository.findById(id);
+        if(optionalCharacter.isEmpty())
+            return ResponseEntity.unprocessableEntity().build();
 
+        character.setCharacterType(optionalCharacterType.get());
+        character.setId(optionalCharacter.get().getId());
+        characterRepository.save(character);
 
-        Character updatedCharacter = characterDao.save(character);
-
-        return ResponseEntity.ok(updatedCharacter);
+        return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/characters/{id}")
-    public ResponseEntity<Void> destroy(@PathVariable int id) {
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Character> delete(@PathVariable int id) {
 
-        if(characterDao.findById(id) == null)
-            return ResponseEntity.notFound().build();
+        Optional<Character> optionalCharacter = characterRepository.findById(id);
+        if(optionalCharacter.isEmpty())
+            return ResponseEntity.unprocessableEntity().build();
 
-        characterDao.deleteById(id);
+        characterRepository.delete(optionalCharacter.get());
 
         return ResponseEntity.noContent().build();
     }

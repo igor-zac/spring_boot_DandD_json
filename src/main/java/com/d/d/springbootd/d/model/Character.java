@@ -1,20 +1,27 @@
 package com.d.d.springbootd.d.model;
 
+import com.sun.istack.NotNull;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = Character.TABLE_NAME)
 public class Character {
 
+    public static final String TABLE_NAME = "dd_character";
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @NotNull
     private String name;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "character_type_id")
     private CharacterType characterType;
 
-
-    public Character() {
-    }
-
-    public Character(int id, String name, CharacterType characterType) {
-        this.id = id;
-        this.name = name;
-        this.characterType = characterType;
-    }
+    public Character() {}
 
     public int getId() {
         return id;
@@ -45,7 +52,7 @@ public class Character {
         return "Character{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", characterType=" + characterType +
+                ", characterType=" + characterType.toString() +
                 '}';
     }
 }

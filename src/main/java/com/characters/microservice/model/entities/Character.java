@@ -1,4 +1,4 @@
-package com.characters.microservice.model;
+package com.characters.microservice.model.entities;
 
 import com.sun.istack.NotNull;
 import org.hibernate.validator.constraints.Length;

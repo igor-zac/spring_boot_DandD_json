@@ -3,9 +3,11 @@ package com.characters.microservice.web.controller;
 import com.characters.microservice.exceptions.CharacterIdMismatchException;
 import com.characters.microservice.exceptions.CharacterNotFoundException;
 import com.characters.microservice.exceptions.CharacterTypeNotFoundException;
-import com.characters.microservice.model.Character;
-import com.characters.microservice.model.CharacterRepository;
-import com.characters.microservice.model.CharacterTypeRepository;
+import com.characters.microservice.exceptions.IncorrectCharacterTypeDataException;
+import com.characters.microservice.model.entities.Character;
+import com.characters.microservice.model.entities.CharacterType;
+import com.characters.microservice.model.repositories.CharacterRepository;
+import com.characters.microservice.model.repositories.CharacterTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -32,22 +34,24 @@ public class CharacterController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Character store(@RequestBody @Valid Character character)
+    public Character store(@RequestBody @Valid Character character) throws IncorrectCharacterTypeDataException
     {
-        characterTypeRepository.findById(character.getCharacterType().getId())
+        CharacterType retrievedCharacterType = characterTypeRepository.findById(character.getCharacterType().getId())
                 .orElseThrow(CharacterTypeNotFoundException::new);
+
+        if (!character.getCharacterType().getName().equals(retrievedCharacterType.getName())) {
+            throw new IncorrectCharacterTypeDataException();
+        }
 
         Character savedCharacter = characterRepository.save(character);
 
-        return characterRepository.save(character);
+        return characterRepository.save(savedCharacter);
     }
 
     @GetMapping(value = "/{id}")
     public Character show(@PathVariable int id)
     {
-
         return characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
-
     }
 
     @PutMapping(value = "/{id}")
@@ -68,8 +72,8 @@ public class CharacterController {
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id) {
-
+    public void delete(@PathVariable int id)
+    {
         characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
         characterRepository.deleteById(id);
     }

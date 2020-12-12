@@ -33,4 +33,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, e.getLocalizedMessage(),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
+
+    @ExceptionHandler({ IncorrectCharacterTypeDataException.class })
+    public ResponseEntity<Object> handleIncorrectCharacterTypeDataProvided(Exception e, WebRequest request) {
+        return handleExceptionInternal(e, e.getLocalizedMessage(),
+                new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+    }
 }

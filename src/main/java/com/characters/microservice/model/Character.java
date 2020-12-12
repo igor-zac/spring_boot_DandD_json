@@ -1,4 +1,4 @@
-package com.d.d.springbootd.d.model;
+package com.characters.microservice.model;
 
 import com.sun.istack.NotNull;
 
@@ -17,6 +17,7 @@ public class Character {
     @NotNull
     private String name;
 
+    @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "character_type_id")
     private CharacterType characterType;

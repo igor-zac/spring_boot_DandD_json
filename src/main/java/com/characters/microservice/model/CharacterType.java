@@ -1,4 +1,4 @@
-package com.d.d.springbootd.d.model;
+package com.characters.microservice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;

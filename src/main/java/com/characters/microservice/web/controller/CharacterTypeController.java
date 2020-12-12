@@ -1,7 +1,7 @@
-package com.d.d.springbootd.d.web.controller;
+package com.characters.microservice.web.controller;
 
-import com.d.d.springbootd.d.model.CharacterType;
-import com.d.d.springbootd.d.model.CharacterTypeRepository;
+import com.characters.microservice.model.CharacterType;
+import com.characters.microservice.model.CharacterTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ public class CharacterTypeController {
     private CharacterTypeRepository characterTypeRepository;
 
     @GetMapping
-    public ResponseEntity<List<CharacterType>> index() {
-        return ResponseEntity.ok(characterTypeRepository.findAll());
+    public List<CharacterType> index() {
+        return characterTypeRepository.findAll();
     }
 }

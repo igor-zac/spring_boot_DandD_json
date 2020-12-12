@@ -1,4 +1,4 @@
-package com.d.d.springbootd.d;
+package com.characters.microservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

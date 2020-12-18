@@ -34,14 +34,10 @@ public class CharacterController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Character store(@RequestBody @Valid Character character) throws IncorrectCharacterTypeDataException
+    public Character store(@RequestBody @Valid Character character)
     {
-        CharacterType retrievedCharacterType = characterTypeRepository.findById(character.getCharacterType().getId())
+        characterTypeRepository.findById(character.getCharacterType().getId())
                 .orElseThrow(CharacterTypeNotFoundException::new);
-
-        if (!character.getCharacterType().getName().equals(retrievedCharacterType.getName())) {
-            throw new IncorrectCharacterTypeDataException();
-        }
 
         Character savedCharacter = characterRepository.save(character);
 
